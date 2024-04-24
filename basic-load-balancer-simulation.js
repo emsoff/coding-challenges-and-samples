@@ -1,6 +1,5 @@
 // Challenge: Simulate a load balancer by creating a collection of servers that can process requests of unknown duration, with each new request being forwarded to the server with the least active requests.
 
-
 class Server {
     constructor(capacity) {
         this.capacity = capacity;
