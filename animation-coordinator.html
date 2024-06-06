@@ -1,0 +1,123 @@
+<style>
+    #elementToAnimate {
+        width: 100px;
+        height: 100px;
+        background-color: red;
+        opacity: 1;
+        position: relative;
+        border-radius: 50px;
+    }
+</style>
+<div id="elementToAnimate"></div>
+<div style="margin-top: 2rem">
+    <button onclick="addSlideRight()">Slide Right</button>
+    <button onclick="addFadeOut()">Slide Fade</button>
+    <button onclick="scheduler.start()">Start Animations</button>
+    <button onclick="scheduler.stop()">Stop Animations</button>
+</div>
+
+<script>
+// Create an animation coordinator that allows users to define, run and monitor animations with javascript
+
+class AnimationCoordinator {
+    constructor() {
+        this.animations = [];
+        this.isRunning = false;
+    }
+
+    addAnimation(animation) {
+        this.animations.push(animation);
+    }
+
+    start() {
+        if (!this.isRunning) {
+            this.isRunning = true;
+            this.run();
+        }
+    }
+
+    stop() {
+        this.isRunning = false;
+    }
+
+    run() {
+        if (!this.isRunning) return;
+
+        const timestamp = Date.now();
+        this.animations.forEach(animation => {
+            if (!animation.startTime) {
+                animation.startTime = timestamp;
+            }
+
+            const elapsedTime = timestamp - animation.startTime;
+            const progress = elapsedTime / animation.duration;
+            const easedProgress = this.applyEasing(progress, animation.easing);
+
+            for (const property in animation.properties) {
+                const startValue = parseFloat(getComputedStyle(animation.element)[property]);
+                const endValue = animation.properties[property];
+                const currentValue = startValue + (endValue - startValue) * easedProgress;
+
+                animation.element.style[property] = currentValue;
+            }
+
+            if (progress >= 1) {
+                animation.completed = true;
+            }
+        });
+
+        this.animations = this.animations.filter(animation => !animation.completed);
+
+        requestAnimationFrame(this.run.bind(this));
+    }
+
+    applyEasing(progress, easingType) {
+        switch (easingType) {
+            case 'linear':
+                return progress;
+                // other animations 
+            default:
+                return progress; // default to linear if not specified
+        }
+    }
+}
+
+const scheduler = new AnimationCoordinator();
+
+const element = document.getElementById('elementToAnimate');
+
+function addSlideRight() {
+    
+    scheduler.addAnimation({
+        element: element,
+        properties: { left: 200 },
+        duration: 4000,
+        easing: 'linear'
+    });
+    
+}
+
+function addFadeOut() {
+    
+    scheduler.addAnimation({
+        element: element,
+        properties: { opacity: 0 },
+        duration: 2000,
+        easing: 'linear'
+    });
+    
+}
+
+function addRotate() {
+    
+    scheduler.addAnimation({
+        element: element,
+        properties: { transform: "rorate(90deg)" },
+        duration: 2000,
+        easing: 'linear'
+    });
+    
+}
+
+
+</script>
