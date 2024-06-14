@@ -48,15 +48,21 @@ class RelectedPerson {
     }
 }
 
+function shouldntBeManipulatingPerson() {
+    person.favoriteColor = 'red' // does nothing
+}
+
 const _person = new RelectedPerson(person);
 
 _person.setProperty('profession', 'accountant')
 
 _person.preventExtensions()
 
-_person.setProperty('alive', true)
+shouldntBeManipulatingPerson()
 
-console.log(_person)
+_person.setProperty('alive', true) // does nothing
+
+console.log(person)
 
 console.log(_person.invokeMethod('greet', ['hello']))
 
